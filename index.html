@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MetabolickiK">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <title>Metabolički & Rekompozicijski Kalkulator</title>
+    <style>
+        :root {
+            --bg-body: #0d1322;
+            --bg-card: #151e34;
+            --bg-inner: #0b1120;
+            --border: #233154;
+            --border-hover: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --accent-green: #22c55e;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --badge-bg: rgba(56, 189, 248, 0.12);
+            --badge-border: rgba(56, 189, 248, 0.3);
+            --info-bg: #090e1a;
+            --header-grad: linear-gradient(135deg, #15223e 0%, #0d1527 100%);
+            --btn-grad: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            --btn-grad-hover: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%);
+        }
+
+        body.theme-female {
+            --bg-body: #140d1a;
+            --bg-card: #201429;
+            --bg-inner: #100814;
+            --border: #3c244b;
+            --border-hover: #f472b6;
+            --text-main: #fdf2f8;
+            --text-muted: #c4b5fd;
+            --primary: #f472b6;
+            --primary-hover: #ec4899;
+            --accent-green: #34d399;
+            --accent-orange: #fbbf24;
+            --accent-red: #f87171;
+            --accent-purple: #e879f9;
+            --badge-bg: rgba(244, 114, 182, 0.12);
+            --badge-border: rgba(244, 114, 182, 0.3);
+            --info-bg: #0b060f;
+            --header-grad: linear-gradient(135deg, #2a1435 0%, #17091f 100%);
+            --btn-grad: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+            --btn-grad-hover: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 24px 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1060px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .page-header {
+            background: var(--header-grad);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transition: background 0.3s ease;
+        }
+
+        .page-title {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .page-title span {
+            color: var(--primary);
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+
+        .input-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        input, select {
+            background-color: var(--bg-inner);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #ffffff;
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            outline: none;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--badge-border);
+        }
+
+        .status-banner {
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            font-size: 0.84rem;
+            line-height: 1.45;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .status-banner.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #fcd34d;
+        }
+
+        .status-banner.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            color: #86efac;
+        }
+
+        .btn-calc {
+            background: var(--btn-grad);
+            color: #04101e;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-calc:hover {
+            transform: translateY(-1px);
+            background: var(--btn-grad-hover);
+        }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .btn-toggle-all {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-toggle-all:hover {
+            background-color: var(--border);
+            color: #ffffff;
+        }
+
+        .segment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .segment-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            transition: border-color 0.2s ease;
+        }
+
+        .segment-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .segment-header-btn {
+            width: 100%;
+            background-color: var(--bg-card);
+            border: none;
+            padding: 16px 20px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: background-color 0.2s ease;
+        }
+
+        .segment-header-btn:hover {
+            background-color: var(--bg-inner);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .segment-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .segment-badge-number {
+            background-color: var(--border);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .header-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pill-badge {
+            background: var(--badge-bg);
+            border: 1px solid var(--badge-border);
+            color: var(--primary);
+            font-size: 0.76rem;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pill-badge.green {
+            background: rgba(34, 197, 94, 0.12);
+            border-color: rgba(34, 197, 94, 0.35);
+            color: #4ade80;
+        }
+
+        .pill-badge.orange {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.35);
+            color: #fbbf24;
+        }
+
+        .pill-badge.red {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.35);
+            color: #f87171;
+        }
+
+        .pill-badge.purple {
+            background: rgba(168, 85, 247, 0.12);
+            border-color: rgba(168, 85, 247, 0.35);
+            color: #c084fc;
+        }
+
+        .pill-badge.dimmed {
+            background: rgba(148, 163, 184, 0.08);
+            border-color: rgba(148, 163, 184, 0.25);
+            color: #94a3b8;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--bg-inner);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 0.75rem;
+            transition: transform 0.25s ease, background-color 0.2s;
+        }
+
+        .segment-card.open .toggle-icon {
+            transform: rotate(180deg);
+            background-color: var(--primary);
+            color: #051020;
+            border-color: var(--primary);
+        }
+
+        .segment-content {
+            display: none;
+            padding: 20px 24px 24px;
+            background-color: var(--bg-inner);
+            border-top: 1px solid var(--border);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .segment-card.open .segment-content {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .info-box {
+            background-color: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .info-box.active-formula {
+            border-color: var(--accent-green);
+            background: rgba(34, 197, 94, 0.04);
+        }
+
+        .info-box.inactive-formula {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+
+        .info-box h4 {
+            color: var(--primary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .highlight-calc {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .formula-card {
+            background-color: #070c17;
+            border-left: 3px solid var(--primary);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.82rem;
+            color: #7dd3fc;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .warning-card {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: #fca5a5;
+        }
+
+        .notice-card {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: #fcd34d;
+        }
+
+        .success-card {
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: #86efac;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.77rem;
+        }
+
+        .styled-table th, .styled-table td {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .styled-table th {
+            background-color: var(--bg-card);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .styled-table tr:nth-child(even) {
+            background-color: rgba(255,255,255,0.015);
+        }
+
+        .styled-table td.val-highlight {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .btn-info-toggle {
+            background-color: var(--bg-inner);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-size: 0.83rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-info-toggle:hover {
+            background-color: var(--bg-card);
+            border-color: var(--primary);
+        }
+
+        .info-accordion-content {
+            display: none;
+            background-color: var(--info-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 22px;
+            margin-top: 10px;
+            font-size: 0.84rem;
+            line-height: 1.65;
+            color: #cbd5e1;
+        }
+
+        .info-accordion-content.open {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .info-q-block {
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .info-q-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-q-title {
+            color: var(--primary);
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .scenario-box {
+            background: rgba(255,255,255,0.02);
+            border-left: 3px solid var(--border-hover);
+            padding: 10px 14px;
+            margin: 8px 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .scenario-box strong {
+            color: #f8fafc;
+        }
+
+        .region-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 5px 8px;
+            background: rgba(255,255,255,0.02);
+            margin: 3px 0;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 650px) {
+            .page-header { padding: 18px; }
+            .input-card { padding: 18px; }
+            .grid-inputs { grid-template-columns: 1fr; }
+            .header-metrics { flex-direction: column; align-items: flex-start; }
+            .segment-header-btn { flex-direction: column; align-items: flex-start; }
+            .header-right { align-self: flex-end; margin-top: -24px; }
+        }
+    </style>
+</head>
+<body class="theme-male">
+
+<div class="container">
+
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+        <h1 class="page-title">
+            <span>⚡</span> Integrisani Metabolički & Rekompozicijski Panel
+        </h1>
+        <p class="page-subtitle">
+            Objedinjeni naučni modeli sa automatskom detekcijom antropometrijskih obima i dinamičkom adaptacijom pola: US Navy (LBM & Mast), Dual-Mode BMR (Katch-McArdle vs. Mifflin-St Jeor), Alpertov biofizički limit mobilizacije masti i sinteza Garthe / Helms / Forbes standarda mršavljenja.
+        </p>
+    </header>
+
+    <!-- INPUT CONTROLS -->
+    <section class="input-card">
+        <div class="section-title">
+            <span>1. Unos ličnih parametara</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <span id="profile-gender-badge" class="pill-badge purple" style="font-size:0.75rem;">Profil: Muškarac ♂</span>
+                <span id="calc-mode-indicator" style="font-size: 0.75rem; font-weight: bold; color: var(--accent-green);">
+                    Zlatni standard (LBM aktivan)
+                </span>
+            </div>
+        </div>
+
+        <div id="circumference-banner" class="status-banner success">
+            <span style="font-size: 1.1rem;">✓</span>
+            <span id="circumference-banner-text">
+                Obimi vrata i struka su uneseni. Sistem radi u režimu visoke tačnosti (Zlatni standard). TDEE, deficiti i makronutrijenti se računaju preko Katch-McArdle jednačine i tvoje stvarne nemasne mase (LBM).
+            </span>
+        </div>
+
+        <div class="grid-inputs">
+            <div class="form-group">
+                <label for="gender">Pol</label>
+                <select id="gender" onchange="toggleGenderFields(); calculateAll();">
+                    <option value="male" selected>Muškarac ♂</option>
+                    <option value="female">Žena ♀</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="age">Starost (godine)</label>
+                <input type="number" id="age" value="33" min="15" max="100" oninput="calculateAll()">
+            </div>
+            <div class="form-group">
+                <label for="weight">Težina (kg)</label>
+                <input type="number" id="weight" value="99" step="0.1" min="30" max="250" oninput="calculateAll()">
+            </div>
+            <div class="form-group">
+                <label for="height">Visina (cm)</label>
+                <input type="number" id="height" value="179" min="120" max="230" oninput="calculateAll()">
+            </div>
+        </div>
+
+        <div class="grid-inputs">
+            <div class="form-group">
+                <label for="neck">Obim vrata (cm) <span style="color: var(--primary);">*opciono</span></label>
+                <input type="number" id="neck" value="40" step="0.5" placeholder="Ispod grkljana" oninput="calculateAll()">
+            </div>
+            <div class="form-group">
+                <label for="waist">Obim struka (cm) <span style="color: var(--primary);">*opciono</span></label>
+                <input type="number" id="waist" value="96" step="0.5" placeholder="U ravni pupka" oninput="calculateAll()">
+            </div>
+            <div class="form-group" id="hip-group" style="display: none;">
+                <label for="hip">Obim kukova (cm - žene) <span style="color: var(--primary);">*opciono</span></label>
+                <input type="number" id="hip" value="105" step="0.5" placeholder="Najširi dio gluteusa" oninput="calculateAll()">
+            </div>
+            <div class="form-group">
+                <label for="activity">Nivo dnevne aktivnosti</label>
+                <select id="activity" onchange="calculateAll()">
+                    <option value="1.2">Sjedalački (uredski posao, bez treninga)</option>
+                    <option value="1.375" selected>Lagano aktivan (1-3 treninga sedmično / 6k koraka - Garmin standard)</option>
+                    <option value="1.5">Umjereno aktivan (3-4 treninga + 8-10k koraka)</option>
+                    <option value="1.725">Vrlo aktivan (5-6 teških treninga / aktivan posao)</option>
+                    <option value="1.9">Ekstremno aktivan (fizički rad + svakodnevni treninzi)</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn-calc" onclick="calculateAll()">
+            <span>⚡ Osvježi i preračunaj sve modele</span>
+        </button>
+
+        <div class="controls-bar">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                💡 Klikni na zaglavlje kolone u tabeli potrošnje za skok na smjernice i naučne uslove tog režima.
+            </span>
+            <button class="btn-toggle-all" onclick="toggleAllSegments()">
+                <span id="toggle-all-text">▼ Otvori sve segmente</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- ACCORDION SECTIONS -->
+    <div class="segment-list">
+
+        <!-- SEGMENT 1: US NAVY METODA -->
+        <article class="segment-card" id="card-navy">
+            <button class="segment-header-btn" onclick="toggleSegment('card-navy')">
+                <div class="header-left">
+                    <div class="segment-name">
+                        <span class="segment-badge-number">01</span>
+                        US Navy Metoda & Sastav Tijela
+                    </div>
+                    <div class="header-metrics">
+                        <span class="pill-badge" id="hdr-navy-fat">Mast: -- %</span>
+                        <span class="pill-badge green" id="hdr-navy-lbm">Nemasna masa (LBM): -- kg</span>
+                        <span class="pill-badge orange" id="hdr-navy-fatmass">Masa sala: -- kg</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="toggle-icon">▼</div>
+                </div>
+            </button>
+            <div class="segment-content">
+                <div id="navy-content-body"></div>
+
+                <button class="btn-info-toggle" onclick="toggleInfo('info-navy', this)">
+                    <span>📖 Naučne informacije & Vodič (US Navy Metoda)</span>
+                    <span>▼</span>
+                </button>
+                <div id="info-navy" class="info-accordion-content">
+                    <div class="info-q-block">
+                        <div class="info-q-title">1. Šta je ovaj model i koja je njegova naučna osnova?</div>
+                        <p>US Navy antropometrijsku metodu razvili su dr. James A. Hodgdon i dr. M. B. Beckett 1984. godine pri Mornaričkom istraživačkom centru za zdravlje SAD-a (Naval Health Research Center, San Diego - tehnički izvještaji 84-11 i 84-29). Naučna i biološka osnova modela počiva na matematičkom modeliranju ljudskog tijela gdje se gustina tijela (Db) procjenjuje na osnovu logaritamskog odnosa visine i razlike između obima trupa (struk kod muškaraca; struk + kukovi kod žena) i obima vrata. U ovoj biofizičkoj jednačini, <strong>obim vrata ima fundamentalnu ulogu anatomskog kalibracionog markera</strong>: vrat predstavlja mjeru skeletnog okvira i nemasne mišićne mase gornjeg dijela tijela koja se minimalno mijenja sa nakupljanjem masnog tkiva. Oduzimanjem obima vrata od obima trupa izoluje se čisto nakupljanje masti na abdomenu, dok visina daje longitudinalnu dimenziju tijela. Za razliku od kalipera koji mjeri samo potkožno salo, obim struka direktno obuhvata i visceralnu (unutrašnju) mast koja okružuje organe trbušne duplje.</p>
+                    </div>
+                    <div class="info-q-block">
+                        <div class="info-q-title">2. Koja je tačna formula i kako se matematički obrađuju podaci?</div>
+                        <p>Tačne jednačine za proračun gustine tijela (Db) glase:<br>
+                        • <strong>Muškarci:</strong> <code>Db = 1.0324 - 0.19077 × log₁₀(struk - vrat) + 0.15456 × log₁₀(visina)</code><br>
+                        • <strong>Žene:</strong> <code>Db = 1.29579 - 0.35004 × log₁₀(struk + kukovi - vrat) + 0.22100 × log₁₀(visina)</code><br>
+                        Sve antropometrijske mjere unose se u centimetrima, a logaritam je sa bazom 10 (log₁₀). Procenat tjelesne masti (%BF) računa se putem Siri jednačine: <code>%Masti = (495 / Db) - 450</code>.<br>
+                        Nakon toga, računa se masa masnog tkiva: <code>Masa sala (kg) = Ukupna masa × (%Masti / 100)</code>, te nemasna masa: <code>LBM (kg) = Ukupna masa - Masa sala</code>.</p>
+                    </div>
+                    <div class="info-q-block">
+                        <div class="info-q-title">3. Kako tumačiti ovaj proračun u zavisnosti od cilja (definicija, lean bulk, maksimalna masa)?</div>
+                        <div class="scenario-box">
+                            <strong>• Mršavljenje i definicija (maksimalno očuvanje mišića):</strong> Primarni cilj je smanjenje razlike (struk - vrat). Ako obim struka opada dok obim vrata miruje, to dokazuje da gubitak potiče direktno iz visceralnog i abdominalnog potkožnog sala. LBM dobijen ovom metodom služi kao apsolutni temelj za unos proteina (2.0 g po kg LBM) i proračun bazalnog metabolizma.
+                        </div>
+                        <div class="scenario-box">
+                            <strong>• Čista hipertrofija / Lean bulk (rast mišića uz nimalo ili neophodno minimalno mašćenja):</strong> US Navy metoda je kontrolni instrument protiv tova sala. Obim struka ne bi smio rasti brže od 0.5 cm na svakih 1 do 1.5 kg dobijene težine. Ako se razlika (struk - vrat) povećava brže od porasta ukupne težine, to dokazuje da se talože trigliceridi u adipocitima.
+                        </div>
+                        <div class="scenario-box">
+                            <strong>• Maksimalna hipertrofija / Standardni bulk (maksimalna masa gdje je mast prihvatljiva):</strong> Postavlja gornju biološku granicu bezbjednosti. Kada procenat masti pređe 20–22% kod muškaraca (30–32% kod žena), drastično opada inzulinska osjetljivost mišića, raste sistemska inflamacija i aromataza pretvara testosteron u estrogen, što je signal za prekid bulka.
+                        </div>
+                    </div>
+                    <div class="info-q-block">
+                        <div class="info-q-title">4. Koje su mane, ograničenja i potencijalni rizici modela?</div>
+                        <p>Margina greške u odnosu na DEXA skener iznosi ±3.5% do 4.5%. Izvori mjerne greške: uvlačenje stomaka umjesto mjerenja na kraju normalnog opuštenog izdisaja (FRC), nadutost i sadržaj crijeva (hrana, tečnost, so), te nesrazmjerno debeo vrat kod dizača tegova koji može blago potcijeniti procenat masti. Obavezna je upotreba trake sa standardizovanim opružnim zatezačem.</p>
+                    </div>
+                    <div class="info-q-block">
+                        <div class="info-q-title">5. Kako se ovaj parametar operativno primjenjuje u praksi i kada se ponovo mjeri?</div>
+                        <p>Mjerenje se vrši svakih <strong>2 do 4 sedmice</strong>, isključivo ujutru, nakon toaleta, natašte (prije hrane i vode). Mjeri se tri puta zaredom i uzima prosjek. Dobijeni LBM unosi se u Katch-McArdle formulu za BMR, a masa sala služi za praćenje Alpertovog i Forbesovog modela.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- SEGMENT 2: BMR & TDEE & DNEVNI KALORIJSKI UNOS U SKLADU SA CILJEM -->
+        <article class="segment-card" id="card-bmr">
+            <button class="segment-header-btn" onclick="toggleSegment('card-bmr')">
+                <div class="header-left">
+                    <div class="segment-name">
+                        <span class="segment-badge-number">02</span>
+                        BMR (Bazalni Metabolizam) & TDEE Potrošnja & Dnevni kalorijski unos u skladu sa ciljem
+                    </div>
+                    <div class="header-metrics" id="hdr-bmr-metrics"></div>
+                </div>
+                <div class="header-right">
+                    <div class="toggle-icon">▼</div>
+                </div>
+            </button>
+            <div class="segment-content">
+                <div id="bmr-status-box" style="margin-bottom: 16px;"></div>
+
+                <div class="content-grid">
+                    <div class="info-box" id="box-bmr-katch">
+                        <h4>1. Katch-McArdle BMR (Zlatni standard)</h4>
+                        <div class="highlight-calc" id="det-bmr-katch">-- kcal</div>
+                        <p style="font-size: 0.82rem; color: var(--text-muted);" id="det-bmr-katch-desc">
+                            Računa potrošnju isključivo iz nemasne mase (LBM). Zahtijeva unos obima za tačan procenat masti.
+                        </p>
+                    </div>
+                    <div class="info-box" id="box-bmr-mifflin">
+                        <h4>2. Mifflin-St Jeor BMR (Standardni)</h4>
+                        <div class="highlight-calc" id="det-bmr-mifflin">-- kcal</div>
+                        <p style="font-size: 0.82rem; color: var(--text-muted);" id="det-bmr-mifflin-desc">
+                            Računa potrošnju iz ukupne mase, visine i godina. Koristi se samostalno kada obimi nisu poznati.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="formula-card">
+                    <strong>Poređenje formula:</strong><br>
+                    • Katch-McArdle: BMR = 370 + (21.6 × LBM u kg) <em>[Pretpostavlja poznat LBM]</em><br>
+                    • Mifflin-St Jeor (M): BMR = (10 × kg) + (6.25 × cm) - (5 × god) + 5<br>
+                    • Mifflin-St Jeor (Ž): BMR = (10 × kg) + (6.25 × cm) - (5 × god) - 161
+                </div>
+
+                <h4 style="color: var(--primary); font-size: 0.85rem; margin-top: 14px; margin-bottom: 6px; text-transform: uppercase;">
+                    Ukupna dnevna potrošnja (TDEE) i ciljani unosi po fazama — <span id="tdee-basis-label" style="color: #4ade80;">Bazirana na Katch-McArdle BMR-u</span>:
+                </h4>
+                
+                <!-- RESPONZIVNI KONTEJNER: PRELAMA SE U NOVI RED SA KOPIJAMA PRVE 4 KOLONE -->
+                <div id="tdee-table-anchor" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+                    <!-- Generiše se dinamički u zavisnosti od širine prozora -->
+                </div>
+
+                <button class="btn-info-toggle" onclick="toggleInfo('info-bmr', this)">
+                    <span>📖 Naučne informacije & Vodič (BMR & TDEE Modeli & Dnevni Unos)</span>
+                    <span>▼</span>
+                </button>
+                <div id="info-bmr" class="info-accordion-content">
+                    <!-- OBJEDINJENI BLOK: BMR MODELI & TDEE POTROŠNJA -->
+                    <div class="info-q-block" id="bmr-q1" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 20px; margin-bottom: 18px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <div class="info-q-title" style="margin-bottom:0; font-size: 0.95rem; color: var(--primary);">
+                                📐 BMR Modeli (Katch-McArdle vs. Mifflin-St Jeor) & TDEE Potrošnja: Naučna Osnova, Formule i Primjena u Praksi
+                            </div>
+                            <button type="button" onclick="scrollToTableHeader()" style="background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">↑ Povratak na tabelu potrošnje</button>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 10px;">
+                            <!-- SUB-CARD 1: KATCH-MCARDLE -->
+                            <div style="background: rgba(34, 197, 94, 0.04); border: 1px solid rgba(34, 197, 94, 0.25); border-radius: 8px; padding: 12px 14px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <strong style="color: #4ade80; font-size: 0.84rem;">1. Katch-McArdle BMR (Zlatni standard)</strong>
+                                    <span style="font-size: 0.68rem; background: rgba(34, 197, 94, 0.15); color: #4ade80; padding: 2px 6px; border-radius: 4px; font-weight: 700;">LBM Baza</span>
+                                </div>
+                                <div style="font-family: ui-monospace, monospace; font-size: 0.78rem; background: #070c17; color: #7dd3fc; padding: 6px 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid #22c55e;">
+                                    BMR = 370 + (21.6 × LBM u kg)
+                                </div>
+                                <p style="font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); margin: 0;">
+                                    <strong>Naučna osnova (1983, 1996):</strong> Polazi od bioenergetske činjenice da unutrašnji organi (srce, jetra, mozak, bubrezi: 200–440 kcal/kg/dan) i skeletni mišići (~13 kcal/kg/dan) nose <strong>preko 95% BMR-a</strong>, dok masno tkivo troši zanemarljivih ~4.5 kcal/kg/dan. Zato Katch-McArdle eliminiše godine i pol, računajući BMR isključivo iz metabolički aktivne nemasne mase (LBM).
+                                </p>
+                            </div>
+
+                            <!-- SUB-CARD 2: MIFFLIN-ST JEOR -->
+                            <div style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 12px 14px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <strong style="color: #fbbf24; font-size: 0.84rem;">2. Mifflin-St Jeor BMR (Standardni)</strong>
+                                    <span style="font-size: 0.68rem; background: rgba(245, 158, 11, 0.15); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Populacijski</span>
+                                </div>
+                                <div style="font-family: ui-monospace, monospace; font-size: 0.78rem; background: #070c17; color: #7dd3fc; padding: 6px 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid #f59e0b;">
+                                    BMR = (10×kg) + (6.25×cm) - (5×god) + s
+                                </div>
+                                <p style="font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); margin: 0;">
+                                    <strong>Naučna osnova (1990):</strong> Validirana na uzorku od 498 subjekata. Najtačnija formula za opštu populaciju bez poznatog sastava tijela (s = +5 za muškarce, -161 za žene). U kalkulatoru služi kao <strong>pouzdani zamjenski model</strong> kada obimi vrata i struka (te LBM) nisu uneseni.
+                                </p>
+                            </div>
+
+                            <!-- SUB-CARD 3: TDEE & OPERATIVNA PRIMJENA -->
+                            <div style="background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 8px; padding: 12px 14px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <strong style="color: #c084fc; font-size: 0.84rem;">3. TDEE Potrošnja & Primjena u Praksi</strong>
+                                    <span style="font-size: 0.68rem; background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Dnevna Potrošnja</span>
+                                </div>
+                                <div style="font-family: ui-monospace, monospace; font-size: 0.78rem; background: #070c17; color: #7dd3fc; padding: 6px 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid #a855f7;">
+                                    TDEE = BMR × PAL faktor (1.2 – 1.9)
+                                </div>
+                                <p style="font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); margin: 0;">
+                                    <strong>Operativna primjena i reevaluacija:</strong> TDEE postavlja radnu hipotezu. Prati se 7-dnevni jutarnji prosjek (medijan) težine tokom 2 do 3 sedmice. Ako vaga odstupa od planiranog tempa, unos se koriguje za 100–150 kcal. BMR i TDEE se automatski reevaluiraju pri svakoj promjeni mase od 3 do 5 kg.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SCENARIJI PRORAČUNA PO CILJEVIMA I POLU -->
+                    <div class="info-q-block" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
+                        <!-- DEDIKOVANI ODJELJAK: POLNI DIFERENCIJAL MASNOG TKIVA -->
+                        <div class="scenario-box" style="margin-bottom: 14px; border-left: 3px solid #f472b6; background: rgba(244, 114, 182, 0.05);">
+                            <strong style="color: #f472b6; font-size: 0.9rem;">♀ Fiziološki diferencijal: Zašto su granice masnog tkiva kod žena uvijek postavljene 8% do 10% više u odnosu na muškarce?</strong>
+                            <p style="margin-top: 6px;">Razlika nije proizvoljna fitnes konvencija, već striktna reproduktivna i endokrina biologija:</p>
+                            <ul style="margin: 4px 0 6px 18px;">
+                                <li><strong>Esencijalna mast (anatomski minimum):</strong> Kod muškaraca iznosi samo 3% do 5% (mast u nervnom sistemu, koštanoj srži i oko organa). Kod žena esencijalna mast iznosi čak <strong>10% do 12%</strong> jer obuhvata polno-specifična masna tkiva (dojke, materica, duboki gluteofemoralni depoi) neophodna za steroidogenezu.</li>
+                                <li><strong>Senzor hipotalamusa i leptinski prag:</strong> Ženski hipotalamus ima znatno osjetljiviji energetski senzor. Kada nivo masti kod žene padne ispod <strong>18% do 20%</strong> (ili energetska dostupnost ispod 30 kcal/kg LBM), nagli pad leptina signalizira mozgu energetsku krizu. Hipotalamus suprimira pulsno lučenje GnRH hormona, što obara LH i FSH i gasi funkciju jajnika — nastupa <strong>hipotalamička amenoreja (gubitak menstrualnog ciklusa)</strong>. Hroničan pad estradiola potom izaziva demineralizaciju kostiju (osteopeniju/osteoporozu) i vaskularni stres (RED-S sindrom).</li>
+                                <li><strong>Ekvivalentne zone forme:</strong> Ženskih <strong>20%–23%</strong> masti fiziološki odgovara muškim <strong>12%–15%</strong> (atletska definicija). Ženskih <strong>>30%</strong> odgovara muškim <strong>>22%</strong> (prag za prelazak na restrikciju). Zato kalkulator automatski prilagođava sve pragove pri izboru ženskog pola.</li>
+                            </ul>
+                        </div>
+
+                        <!-- ODJELJAK: ALPERTOV BIOFIZIČKI MODEL I REGIONALNA KINETIKA -->
+                        <div class="scenario-box" id="goal-alpert" style="margin-bottom: 14px; border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.05);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                                <strong style="color: #fbbf24; font-size: 0.92rem;">🔬 Biofizički model: Mršavljenje prema Alpertovom Biofizičkom Limitu Mobilizacije Masti (2005)</strong>
+                                <button type="button" onclick="scrollToTableHeader()" style="background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">↑ Povratak na tabelu potrošnje</button>
+                            </div>
+                            <p><strong>Naučni zaključak studije dr. Seymoura Alperta (Journal of Theoretical Biology):</strong><br>
+                            Alpert je reevaluacijom podataka Minnesota eksperimenta matematički dokazao da prenos energije iz masnog tkiva u krvotok ima gornji biološki plafon koji iznosi <strong>69.2 kcal po kilogramu masnog tkiva na dan</strong>. Ako je kalorijski deficit veći od ovog broja, masne ćelije fizički ne stižu osloboditi dovoljno masnih kiselina, pa organizam manjak energije prinudno pokriva razgradnjom proteina (mišića i unutrašnjih organa).</p>
+                            
+                            <p style="margin-top: 8px; font-weight: bold; color: #fbbf24;">Kinetika i brzina pražnjenja masti po regijama tijela (1 red — ključne specifikacije):</p>
+                            <div style="margin: 6px 0;">
+                                <div class="region-item">
+                                    <span><strong>1. Visceralna mast (oko crijeva i organa):</strong></span>
+                                    <span>⚡ <strong>80 – 95 kcal/kg/dan</strong> | Topi se: <strong>>18–20% (M) / >26–28% (Ž)</strong></span>
+                                </div>
+                                <div class="region-item">
+                                    <span><strong>2. Periferno potkožno salo (lice, vrat, ramena, ruke, gornja leđa):</strong></span>
+                                    <span>⚡ <strong>65 – 75 kcal/kg/dan</strong> | Topi se: <strong>14–18% (M) / 22–26% (Ž)</strong></span>
+                                </div>
+                                <div class="region-item">
+                                    <span><strong>3. Duboko potkožno salo trupa (DSAT):</strong></span>
+                                    <span>⚡ <strong>60 – 70 kcal/kg/dan</strong> | Topi se: <strong>12–15% (M) / 20–23% (Ž)</strong></span>
+                                </div>
+                                <div class="region-item">
+                                    <span><strong>4. Tvrdokorno potkožno salo (donji stomak/leđa M; bokovi/bedra Ž):</strong></span>
+                                    <span>⚡ <strong>30 – 40 kcal/kg/dan</strong> | Topi se: <strong><10–12% (M) / <18–20% (Ž)</strong></span>
+                                </div>
+                            </div>
+
+                            <p style="margin-top: 8px;"><strong>Da li je mršavljenje prema Alpertovom limitu sigurno i kako opasnost svesti na zanemariv nivo?</strong></p>
+                            <ul style="margin: 4px 0 6px 18px;">
+                                <li><strong>Zašto Alpertov limit opada sa 69.2 na 30 kcal/kg:</strong> Kada se nivo masti spusti na 10–12% kod muškaraca (18–20% kod žena), visceralno i periferno salo su potrošeni. Preostaje samo tvrdokorno salo prepuno &alpha;₂ kočionih receptora sa slabom cirkulacijom koje može dati jedva 30 do 40 kcal/kg. Zato kalkulator automatski obara koeficijent kako procenat masti opada.</li>
+                                <li><strong>Da li je bezbjedno ići do ovog limita?</strong> Da, <em>ako i samo ako</em> se strogo poštuju 3 antikatabolička stuba:
+                                    <br>1) <strong>Unos proteina:</strong> 2.2 do 2.5 g po kg LBM-a (viši unos je obavezan jer se dio aminokiselina troši na glukoneogenezu).
+                                    <br>2) <strong>Trening snage visokog mehaničkog intenziteta:</strong> Zadržavanje radnih težina na šipci šalje snažan signal mTOR receptorima da su mišićna vlakna esencijalna za preživljavanje.
+                                    <br>3) <strong>Očuvanje elektrolita i sna:</strong> Soljenje hrane (3–4 g natrijuma) i 7–8 sati sna sprječavaju hronični skok kortizola koji izaziva katabolizam.</li>
+                            </ul>
+                        </div>
+
+                        <!-- SCENARIO 1: DEFINICIJA (GARTHE / HELMS / FORBES) -->
+                        <div class="scenario-box" id="goal-definicija" style="margin-bottom: 14px; border-left: 3px solid var(--accent-red);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                                <strong style="color: var(--accent-red); font-size: 0.92rem;">• Mršavljenje i definicija (maksimalno očuvanje mišića — Sinteza Garthe / Helms / Forbes)</strong>
+                                <button type="button" onclick="scrollToTableHeader()" style="background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">↑ Povratak na tabelu potrošnje</button>
+                            </div>
+                            <p><strong>Zašto je sinteza ova 3 modela opšteprihvaćeni zlatni standard sportske nauke:</strong><br>
+                            Kombinacija radova dr. Ine Garthe (Norveški olimpijski centar, 2011), dr. Erica Helmsa (ISSN, 2014) i dr. Gilberta Forbesa (1987, 2000) predstavlja jedini sistem koji deficit prilagođava stvarnom biološkom kapacitetu tijela, umjesto nametanja slijepih fiksnih brojki. Raščlanjen je na 3 jasne kategorije:</p>
+                            
+                            <div style="margin: 8px 0;">
+                                <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px;">
+                                    <strong style="color: #fca5a5;">1. Kategorija > 22% masti (M) / > 30% (Ž) [Tempo: 0.8% – 1.0% mase sedmično]:</strong><br>
+                                    <em>Izvor i naučni zaključak:</em> Izvedeno iz <strong>Forbesovog modela</strong>. Osoba sa 20+ kg sala ima ogroman rezervoar energije u adipocitima i visok prirodni štit nad mišićima (P-ratio). Zato može bezbjedno gubiti 0.8% do 1.0% tjelesne težine sedmično (~800–1.000 kcal deficit) bez rizika od katabolizma koji se javlja kod vitkih sportista.
+                                </div>
+                                <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px;">
+                                    <strong style="color: #fbbf24;">2. Kategorija 15% – 22% masti (M) / 23% – 30% (Ž) [Tempo: 0.5% – 0.7% mase sedmično]:</strong><br>
+                                    <em>Izvor i naučni zaključak:</em> Standardna fitnes zona. Ovdje se primjenjuje nalaz <strong>Garthe et al. (2011)</strong> na vrhunskim sportistima. Dokazano je da tempo od 0.7% omogućava potpuni gubitak masnoće uz istovremeno očuvanje i blagi porast LBM-a (+2.1%) i snage, dok je brzi tempo (1.4%) dovodio do gubitka mišića.
+                                </div>
+                                <div style="background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px;">
+                                    <strong style="color: #4ade80;">3. Kategorija < 15% masti (M) / < 23% (Ž) [Tempo: 0.3% – 0.5% mase sedmično]:</strong><br>
+                                    <em>Izvor i naučni zaključak:</em> Istraživanje <strong>Erica Helmsa (2014)</strong> na natural bodibilderima. Kako salo nestaje, depoi tvrdokorne masti oslobađaju manje energije. Helms je dokazao da natural takmičari koji ulaze u jednocifrene procente masti moraju usporiti na 0.3% do 0.5% mase sedmično (~300–450 kcal deficit). Svaki agresivniji deficit na ovom nivou neminovno razara muskulaturu.
+                                </div>
+                            </div>
+                            <p style="margin-top: 6px;"><strong>Uslovi:</strong> Unos proteina zaključan na <strong>2.0 g po kg LBM-a</strong> svakog dana; progresivno opterećenje u teretani.</p>
+                        </div>
+
+                        <!-- SCENARIO 2: ČISTA HIPERTROFIJA / LEAN BULK -->
+                        <div class="scenario-box" id="goal-leanbulk" style="margin-bottom: 14px; border-left: 3px solid var(--accent-green);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                                <strong style="color: var(--accent-green); font-size: 0.92rem;">• Čista hipertrofija / Lean bulk (rast mišića uz nimalo ili neophodno minimalno mašćenja):</strong>
+                                <button type="button" onclick="scrollToTableHeader()" style="background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">↑ Povratak na tabelu potrošnje</button>
+                            </div>
+                            <p><strong>Ciljani kalorijski nivo — Fiziološka dinamika prema procentu masti:</strong></p>
+                            <ul style="margin: 4px 0 6px 18px;">
+                                <li><strong>Ako imaš preko 15% masti (M) / preko 23% (Ž):</strong> Preporučeni kalorijski nivo je <strong>-10% do 0% TDEE-a (blagi deficit do održavanja — Tjelesna rekompozicija)</strong>! Razlog: masno tkivo služi kao baterija (1 kg sala nosi čak 7.700 kcal, dok 1 kg novog mišića nosi samo ~1.300 kcal). Na ovom nivou osoba sa viškom kilograma ne gubi apsolutno ništa na stopi rasta mišića ako jede manje nego što potroši — tijelo energiju za sintezu mišića crpi direktno iz sala, a hranom obezbjeđuje aminokiseline!</li>
+                                <li><strong>Ako si već vitak (10–14% masti M / 18–22% Ž):</strong> Preporučeni unos je blagi suficit od <strong>+3% do +5% iznad TDEE-a (100 do 150 kcal dnevno)</strong>. Prirodni biološki limit rasta novog mišića je 0.25 do 0.5 kg mjesečno, što troši svega ~50–100 kcal dnevno. Svaki veći suficit garantovano odlazi u salo.</li>
+                            </ul>
+                            <p style="margin-top: 6px;"><strong>Uslovi za kontrolu:</strong> Obim struka ne smije rasti brže od 0.5 cm na svakih 1.5 kg dobijene mase; protein na <strong>1.8 do 2.2 g po kg LBM-a</strong>.</p>
+                        </div>
+
+                        <!-- SCENARIO 3: MAKSIMALNA HIPERTROFIJA / STANDARDNI BULK -->
+                        <div class="scenario-box" id="goal-stdbulk" style="border-left: 3px solid var(--accent-purple);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                                <strong style="color: var(--accent-purple); font-size: 0.92rem;">• Maksimalna hipertrofija / Standardni bulk (maksimalna masa gdje je mast prihvatljiva)</strong>
+                                <button type="button" onclick="scrollToTableHeader()" style="background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">↑ Povratak na tabelu potrošnje</button>
+                            </div>
+                            <p><strong>Ciljani kalorijski nivo:</strong> Suficit od <strong>+10% do +15% iznad TDEE-a (+300 do +500 kcal/dan)</strong>, tempo prirasta 1.0% do 1.5% mase mjesečno.</p>
+                            <p style="margin-top: 6px;"><strong>Kome je ovaj režim jedino namijenjen:</strong> Izrazitim ektomorfima (<10% masti) sa agresivnim NEAT-om; sportistima sa 2 teška treninga dnevno; te <strong>korisnicima anaboličkih steroida (AAS)</strong> kod kojih je proteinska sinteza podignuta iznad genetskih granica.</p>
+                            <p style="margin-top: 6px; color: var(--accent-red); font-weight: bold;">⚠️ OŠTRO UPOZORENJE ZA NATURAL REKREATIVCE:</p>
+                            <p>Za natural vježbača sa preko 15% masti ovaj režim donosi <strong>preko 75% do 80% novog tkiva u obliku čistog sala</strong>! Izaziva brzi gubitak inzulinske osjetljivosti, skok estrogena i zahtijeva višemjesečne mučne dijete koje kasnije unište veći dio mišića. Režim je prevaziđen i štetan za naturalce.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+    </div>
+</div>
+
+<script>
+    function toggleGenderFields() {
+        const gender = document.getElementById('gender').value;
+        const hipGroup = document.getElementById('hip-group');
+        const badge = document.getElementById('profile-gender-badge');
+
+        if (gender === 'female') {
+            hipGroup.style.display = 'flex';
+            document.body.classList.add('theme-female');
+            document.body.classList.remove('theme-male');
+            if (badge) {
+                badge.innerText = 'Profil: Žena ♀';
+                badge.className = 'pill-badge purple';
+            }
+        } else {
+            hipGroup.style.display = 'none';
+            document.body.classList.add('theme-male');
+            document.body.classList.remove('theme-female');
+            if (badge) {
+                badge.innerText = 'Profil: Muškarac ♂';
+                badge.className = 'pill-badge purple';
+            }
+        }
+    }
+
+    function toggleSegment(cardId) {
+        const card = document.getElementById(cardId);
+        card.classList.toggle('open');
+        if (cardId === 'card-bmr' && card.classList.contains('open')) {
+            setTimeout(renderTdeeTables, 50);
+        }
+    }
+
+    function toggleInfo(infoId, btn) {
+        const el = document.getElementById(infoId);
+        el.classList.toggle('open');
+        const arrow = btn.querySelector('span:last-child');
+        if (el.classList.contains('open')) {
+            arrow.innerText = '▲';
+        } else {
+            arrow.innerText = '▼';
+        }
+    }
+
+    let allOpen = false;
+    function toggleAllSegments() {
+        allOpen = !allOpen;
+        const cards = document.querySelectorAll('.segment-card');
+        cards.forEach(card => {
+            if (allOpen) {
+                card.classList.add('open');
+            } else {
+                card.classList.remove('open');
+            }
+        });
+        document.getElementById('toggle-all-text').innerText = allOpen ? '▲ Sklopi sve segmente' : '▼ Otvori sve segmente';
+        if (allOpen) {
+            setTimeout(renderTdeeTables, 50);
+        }
+    }
+
+    function goToInfoQuestion(targetId) {
+        const card = document.getElementById('card-bmr');
+        if (!card.classList.contains('open')) {
+            card.classList.add('open');
+        }
+        const info = document.getElementById('info-bmr');
+        if (!info.classList.contains('open')) {
+            info.classList.add('open');
+            const arrow = card.querySelector('.btn-info-toggle span:last-child');
+            if (arrow) arrow.innerText = '▲';
+        }
+        setTimeout(() => {
+            const el = document.getElementById(targetId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+                el.style.boxShadow = '0 0 0 3px var(--primary)';
+                el.style.borderColor = 'var(--primary)';
+                setTimeout(() => {
+                    el.style.boxShadow = 'none';
+                }, 1800);
+            }
+        }, 120);
+    }
+
+    function scrollToTableHeader() {
+        const el = document.getElementById('tdee-table-anchor');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Pohrana globalnog stanja za dinamičko prelamanje tabela na resize
+    let currentCalcData = null;
+
+    function getAvailableTableWidth() {
+        const anchor = document.getElementById('tdee-table-anchor');
+        if (anchor && anchor.clientWidth > 0) {
+            return anchor.clientWidth;
+        }
+        const container = document.querySelector('.container');
+        if (container && container.clientWidth > 0) {
+            return Math.max(320, container.clientWidth - 48);
+        }
+        return Math.max(320, window.innerWidth - 64);
+    }
+
+    function renderTdeeTables() {
+        if (!currentCalcData) return;
+        const anchor = document.getElementById('tdee-table-anchor');
+        if (!anchor) return;
+
+        const d = currentCalcData;
+        const availW = getAvailableTableWidth();
+
+        // Određivanje broja ciljanih kolona po jednom redu (tabeli)
+        let targetsPerTable = 4;
+        if (availW >= 960) {
+            targetsPerTable = 4; // 8 kolona u punoj širini
+        } else if (availW >= 830) {
+            targetsPerTable = 3; // 7 kolona + 5 kolona
+        } else if (availW >= 690) {
+            targetsPerTable = 2; // 6 kolona + 6 kolona
+        } else {
+            targetsPerTable = 1; // 5 kolona po tabeli (minimalni prag prije horizontalnog scrolla)
+        }
+
+        const targetCols = [
+            {
+                id: 'alpert',
+                shortName: 'Alpert Limit',
+                headerHtml: `
+                    <th style="cursor: pointer; background: rgba(245, 158, 11, 0.08);" onclick="goToInfoQuestion('goal-alpert')" title="Klikni za detalje o Alpertovom biofizičkom limitu i brzini pražnjenja sala po regijama">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Mršavljenje prema Alpertovom Biofizičkom Limitu<br><span style="font-size:0.7rem; font-weight:normal; color:#fbbf24;">(teorijski plafon mobilizacije masti)</span></span>
+                            <span style="font-size:0.72rem; background:rgba(245,158,11,0.25); color:#fbbf24; padding:2px 6px; border-radius:4px; font-weight:bold;">${d.alpertCoeff} kcal/kg</span>
+                        </div>
+                        <div style="font-size:0.68rem; color:var(--primary); margin-top:4px; text-decoration:underline;">🔍 Vidi Alpert analizu & regije ➔</div>
+                    </th>
+                `,
+                renderCell: (rowTdee) => {
+                    const rowDefAlpert = Math.round(rowTdee - d.alpertMaxDailyDeficit);
+                    const rowDefPctAlpert = Math.round((d.alpertMaxDailyDeficit / rowTdee) * 100);
+                    return `
+                        <td style="color: var(--accent-orange); font-weight: 600;">
+                            ~${rowDefAlpert.toLocaleString()} kcal<br>
+                            <span style="font-size:0.71rem; color:#fde68a;">(-${d.alpertMaxDailyDeficit.toLocaleString()} kcal / -${rowDefPctAlpert}%)</span>
+                        </td>
+                    `;
+                }
+            },
+            {
+                id: 'definicija',
+                shortName: 'Definicija (Garthe/Helms)',
+                headerHtml: `
+                    <th style="cursor: pointer;" onclick="goToInfoQuestion('goal-definicija')" title="Klikni za detaljne naučne smjernice i uslove ovog režima (Garthe / Helms / Forbes)">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Mršavljenje i definicija<br><span style="font-size:0.7rem; font-weight:normal; color:#fca5a5;">(maksimalno očuvanje mišića — Garthe/Helms/Forbes)</span></span>
+                            <span style="font-size:0.74rem; background:rgba(239,68,68,0.25); color:#fca5a5; padding:2px 6px; border-radius:4px; font-weight:bold;">-${d.currentDefPctGarthe}%</span>
+                        </div>
+                        <div style="font-size:0.68rem; color:var(--primary); margin-top:4px; text-decoration:underline;">🔍 Vidi 3 nivoa & uslove ➔</div>
+                    </th>
+                `,
+                renderCell: (rowTdee) => {
+                    const rowDefGarthe = Math.round(rowTdee - d.dailyDeficitGarthe);
+                    const rowDefPctGarthe = Math.round((d.dailyDeficitGarthe / rowTdee) * 100);
+                    return `
+                        <td style="color: var(--accent-red); font-weight: 600;">
+                            ~${rowDefGarthe.toLocaleString()} kcal<br>
+                            <span style="font-size:0.71rem; color:#fca5a5;">(-${d.dailyDeficitGarthe.toLocaleString()} kcal / -${rowDefPctGarthe}%)</span>
+                        </td>
+                    `;
+                }
+            },
+            {
+                id: 'leanbulk',
+                shortName: 'Lean Bulk',
+                headerHtml: `
+                    <th style="cursor: pointer;" onclick="goToInfoQuestion('goal-leanbulk')" title="Klikni za detaljne smjernice i uslove ovog režima">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Čista hipertrofija / Lean bulk<br><span style="font-size:0.7rem; font-weight:normal; color:#86efac;">(rast mišića uz nimalo ili neophodno minimalno mašćenja)</span></span>
+                            <span style="font-size:0.74rem; background:rgba(34,197,94,0.25); color:#86efac; padding:2px 6px; border-radius:4px; font-weight:bold;">${d.leanBulkLabel}</span>
+                        </div>
+                        <div style="font-size:0.68rem; color:var(--primary); margin-top:4px; text-decoration:underline;">🔍 Vidi smjernice & uslove ➔</div>
+                    </th>
+                `,
+                renderCell: (rowTdee) => {
+                    const rowLeanMin = Math.round(rowTdee * (1 + d.leanBulkMinPct));
+                    const rowLeanMax = Math.round(rowTdee * (1 + d.leanBulkMaxPct));
+                    return `
+                        <td style="color: var(--accent-green); font-weight: 600;">
+                            ~${rowLeanMin.toLocaleString()} – ${rowLeanMax.toLocaleString()} kcal<br>
+                            <span style="font-size:0.71rem;">(${d.leanBulkLabel})</span>
+                        </td>
+                    `;
+                }
+            },
+            {
+                id: 'stdbulk',
+                shortName: 'Standard Bulk',
+                headerHtml: `
+                    <th style="cursor: pointer;" onclick="goToInfoQuestion('goal-stdbulk')" title="Klikni za detaljne smjernice i uslove ovog režima">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Maksimalna hipertrofija / Bulk<br><span style="font-size:0.7rem; font-weight:normal; color:#c084fc;">(+10% do +15%)</span></span>
+                            <span style="font-size:0.74rem; background:rgba(168,85,247,0.25); color:#c084fc; padding:2px 6px; border-radius:4px; font-weight:bold;">+10% do +15%</span>
+                        </div>
+                        <div style="font-size:0.65rem; color:#ef4444; font-weight:bold; margin-top:2px; background:rgba(239,68,68,0.18); padding:2px 4px; border-radius:3px; border:1px solid rgba(239,68,68,0.35);">
+                            ⚠️ NE PRAKTIKOVATI NIKADA OSIM POD SPECIFIČNIM USLOVIMA — VIDI INFO!
+                        </div>
+                    </th>
+                `,
+                renderCell: (rowTdee) => {
+                    const rowBulkMin = Math.round(rowTdee * 1.10);
+                    const rowBulkMax = Math.round(rowTdee * 1.15);
+                    return `
+                        <td style="color: var(--accent-purple); font-weight: 600;">
+                            ~${rowBulkMin.toLocaleString()} – ${rowBulkMax.toLocaleString()} kcal<br>
+                            <span style="font-size:0.71rem;">(+10% do +15%)</span>
+                        </td>
+                    `;
+                }
+            }
+        ];
+
+        // Pakovanje kolona u blokove (tabele)
+        const chunks = [];
+        for (let i = 0; i < targetCols.length; i += targetsPerTable) {
+            chunks.push(targetCols.slice(i, i + targetsPerTable));
+        }
+
+        let fullOutputHtml = '';
+
+        chunks.forEach((chunk, chunkIdx) => {
+            const colCount = 4 + chunk.length;
+            // Minimalna širina osigurava da se horizontalni scroller pojavi tek kad ne može stati 5 kolona
+            const minWidth = 380 + (chunk.length * 140);
+
+            const tableBadgeHtml = chunks.length > 1 ? `
+                <div style="font-size: 0.73rem; font-weight: 700; color: var(--primary); margin: ${chunkIdx === 0 ? '0' : '10px'} 0 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>📋 Tabela (Prikaz ${chunkIdx + 1} od ${chunks.length}): Prve 4 bazne kolone + ${chunk.map(c => c.shortName).join(' & ')}</span>
+                    <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: normal;">(Prebačeno u novi red sa kopijama prve 4 kolone)</span>
+                </div>
+            ` : '';
+
+            fullOutputHtml += `
+                <div>
+                    ${tableBadgeHtml}
+                    <div class="table-container">
+                        <table class="styled-table" style="min-width: ${minWidth}px;">
+                            <thead>
+                                <tr>
+                                    <th>Nivo aktivnosti</th>
+                                    <th>Faktor</th>
+                                    <th style="cursor: pointer; background: rgba(56, 189, 248, 0.08);" onclick="goToInfoQuestion('bmr-q1')" title="Klikni za naučnu osnovu BMR modela">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span>BMR: <strong style="color:var(--primary);">${d.bmrNameStr}</strong></span>
+                                            <span style="font-size:0.7rem; color:var(--primary);">🔍 Vidi BMR ➔</span>
+                                        </div>
+                                        <div style="font-size:0.68rem; font-weight:normal; color:var(--text-muted);">(Fiziološki pod organa)</div>
+                                    </th>
+                                    <th>Dnevna potrošnja (TDEE)<br><span style="font-size:0.7rem; font-weight:normal; color:var(--text-muted);">(Održavanje — 0% suficit)</span></th>
+                                    ${chunk.map(c => c.headerHtml).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${d.levels.map(l => {
+                                    const isSelected = Math.abs(l.factor - d.activityMultiplier) < 0.05;
+                                    const rowTdee = Math.round(d.activeBmr * l.factor);
+                                    return `
+                                        <tr style="${isSelected ? 'background-color: var(--badge-bg); border-left: 3px solid var(--primary);' : ''}">
+                                            <td><strong>${l.name}</strong> ${isSelected ? '<span style="color: var(--primary); font-weight: bold; font-size: 0.72rem;">(Izabrano)</span>' : ''}</td>
+                                            <td>${l.factor}</td>
+                                            <td style="color: var(--primary); font-weight: 600;">~${d.activeBmr.toLocaleString()} kcal</td>
+                                            <td class="val-highlight" style="color: var(--accent-purple);">~${rowTdee.toLocaleString()} kcal</td>
+                                            ${chunk.map(c => c.renderCell(rowTdee)).join('')}
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        });
+
+        anchor.innerHTML = fullOutputHtml;
+    }
+
+    window.addEventListener('resize', () => {
+        renderTdeeTables();
+    });
+
+    function calculateAll() {
+        const gender = document.getElementById('gender').value;
+        const age = parseFloat(document.getElementById('age').value) || 33;
+        const weight = parseFloat(document.getElementById('weight').value) || 99;
+        const height = parseFloat(document.getElementById('height').value) || 179;
+        const neckRaw = document.getElementById('neck').value;
+        const waistRaw = document.getElementById('waist').value;
+        const hipRaw = document.getElementById('hip').value;
+        const activityMultiplier = parseFloat(document.getElementById('activity').value) || 1.375;
+
+        const neck = parseFloat(neckRaw);
+        const waist = parseFloat(waistRaw);
+        const hip = parseFloat(hipRaw);
+
+        let hasCircumference = false;
+        if (gender === 'male') {
+            if (!isNaN(neck) && !isNaN(waist) && neck > 20 && waist > neck) {
+                hasCircumference = true;
+            }
+        } else {
+            if (!isNaN(neck) && !isNaN(waist) && !isNaN(hip) && neck > 15 && (waist + hip) > neck) {
+                hasCircumference = true;
+            }
+        }
+
+        let bmrMifflin = (10 * weight) + (6.25 * height) - (5 * age);
+        bmrMifflin += (gender === 'male') ? 5 : -161;
+        bmrMifflin = Math.round(bmrMifflin);
+
+        const banner = document.getElementById('circumference-banner');
+        const bannerText = document.getElementById('circumference-banner-text');
+        const modeIndicator = document.getElementById('calc-mode-indicator');
+
+        if (hasCircumference) {
+            banner.className = 'status-banner success';
+            bannerText.innerHTML = `<strong>Obimi su unijeti:</strong> Sistem radi u režimu visoke tačnosti (Zlatni standard). TDEE, deficiti i makronutrijenti se računaju preko <strong>Katch-McArdle</strong> formule i tvoje stvarne nemasne mase (LBM).`;
+            modeIndicator.innerText = "Zlatni standard (LBM & Katch-McArdle)";
+            modeIndicator.style.color = "var(--accent-green)";
+        } else {
+            banner.className = 'status-banner warning';
+            bannerText.innerHTML = `<strong>⚠️ Nisu unijeti obimi vrata i struka:</strong> Kalkulator automatski prelazi na <strong>Mifflin-St Jeor</strong> formulu (manje tačna opcija za TDEE). Modeli koji strogo zavise od poznavanja procenta masti (US Navy, Alpertov biofizički limit, Forbes) prikazuju status upozorenja.`;
+            modeIndicator.innerText = "Zamjenski (Mifflin-St Jeor - manje tačno)";
+            modeIndicator.style.color = "var(--accent-orange)";
+        }
+
+        let bodyFatPct = null;
+        let fatMassKg = null;
+        let lbmKg = null;
+        let bmrKatch = null;
+        let activeBmr = bmrMifflin;
+
+        if (hasCircumference) {
+            if (gender === 'male') {
+                const diff = waist - neck;
+                bodyFatPct = 495 / (1.0324 - (0.19077 * Math.log10(diff)) + (0.15456 * Math.log10(height))) - 450;
+            } else {
+                const diff = waist + hip - neck;
+                bodyFatPct = 495 / (1.29579 - (0.35004 * Math.log10(diff)) + (0.22100 * Math.log10(height))) - 450;
+            }
+
+            if (bodyFatPct < 3) bodyFatPct = 3;
+            if (bodyFatPct > 60) bodyFatPct = 60;
+
+            fatMassKg = weight * (bodyFatPct / 100);
+            lbmKg = Math.max(20, weight - fatMassKg);
+
+            bmrKatch = Math.round(370 + (21.6 * lbmKg));
+            activeBmr = bmrKatch;
+        }
+
+        const currentTdee = Math.round(activeBmr * activityMultiplier);
+
+        // ==========================================
+        // SEGMENT 1: US NAVY
+        // ==========================================
+        const hdrNavyFat = document.getElementById('hdr-navy-fat');
+        const hdrNavyLbm = document.getElementById('hdr-navy-lbm');
+        const hdrNavyFatMass = document.getElementById('hdr-navy-fatmass');
+        const navyContent = document.getElementById('navy-content-body');
+
+        if (hasCircumference) {
+            hdrNavyFat.className = "pill-badge";
+            hdrNavyFat.innerText = `Mast: ${bodyFatPct.toFixed(1)}%`;
+            hdrNavyLbm.className = "pill-badge green";
+            hdrNavyLbm.innerText = `LBM: ${lbmKg.toFixed(1)} kg`;
+            hdrNavyFatMass.className = "pill-badge orange";
+            hdrNavyFatMass.innerText = `Salo: ${fatMassKg.toFixed(1)} kg`;
+
+            let catText = (gender === 'male') ? 
+                (bodyFatPct < 14 ? "Atletska forma" : (bodyFatPct < 18 ? "Fitnes / Optimalno zdravlje" : (bodyFatPct < 25 ? "Prosječna forma" : "Povišeno masno tkivo"))) :
+                (bodyFatPct < 21 ? "Atletska forma" : (bodyFatPct < 25 ? "Fitnes / Optimalno" : (bodyFatPct < 32 ? "Prosječna forma" : "Povišeno masno tkivo")));
+
+            navyContent.innerHTML = `
+                <div class="content-grid">
+                    <div class="info-box active-formula">
+                        <h4>Sastav tijela (US Navy)</h4>
+                        <div class="highlight-calc" style="color: var(--accent-green);">${bodyFatPct.toFixed(1)} % masti</div>
+                        <p style="font-size: 0.82rem; color: var(--text-muted);">
+                            Ukupna tjelesna masa: <strong style="color: #fff;">${weight.toFixed(1)} kg</strong><br>
+                            Nemasna masa (LBM - kosti, mišići, organi): <strong style="color: var(--accent-green);">${lbmKg.toFixed(1)} kg</strong> (${((lbmKg/weight)*100).toFixed(1)}%)<br>
+                            Ukupna masa sala: <strong style="color: var(--accent-orange);">${fatMassKg.toFixed(1)} kg</strong>
+                        </p>
+                    </div>
+                    <div class="info-box">
+                        <h4>Klasifikacija forme</h4>
+                        <div class="highlight-calc" style="color: var(--primary);">${catText}</div>
+                        <p style="font-size: 0.82rem; color: var(--text-muted);">
+                            Pouzdanost krojačkog centimetra sa zatezačem iznosi ±3.5% do 4.5% i obuhvata i visceralnu i potkožnu mast.
+                        </p>
+                    </div>
+                </div>
+                <div class="formula-card">
+                    <strong>Formula (${gender === 'male' ? 'Muškarci' : 'Žene'}):</strong> ${gender === 'male' ? '495 / (1.0324 - 0.19077×log₁₀(struk-vrat) + 0.15456×log₁₀(visina)) - 450' : '495 / (1.29579 - 0.35004×log₁₀(struk+kukovi-vrat) + 0.22100×log₁₀(visina)) - 450'}
+                </div>
+            `;
+        } else {
+            hdrNavyFat.className = "pill-badge red";
+            hdrNavyFat.innerText = `Mast: Nedostaju obimi`;
+            hdrNavyLbm.className = "pill-badge dimmed";
+            hdrNavyLbm.innerText = `LBM: Nije dostupno`;
+            hdrNavyFatMass.className = "pill-badge dimmed";
+            hdrNavyFatMass.innerText = `Salo: Nije dostupno`;
+
+            navyContent.innerHTML = `
+                <div class="warning-card">
+                    <strong>⚠️ US Navy proračun nije moguć:</strong> Da bi se izračunao procenat masti i nemasna masa (LBM), neophodno je unijeti obim vrata i struka (te kukova za žene). Bez ovih podataka formula ne može raditi.
+                </div>
+                <p style="margin-top: 10px; font-size: 0.84rem; color: var(--text-muted);">
+                    Unesi obim vrata tik ispod grkljana i obim struka horizontalno u ravni pupka u formularu na vrhu kako bi otključao precizne metrike.
+                </p>
+            `;
+        }
+
+        // ==========================================
+        // 1. ALPERTOV DINAMIČKI KOEFICIJENT (PREMA PROCENTU MASTI I POLU)
+        // ==========================================
+        let alpertCoeff = 69.2;
+        if (hasCircumference) {
+            if (gender === 'male') {
+                if (bodyFatPct > 22) alpertCoeff = 69.2;
+                else if (bodyFatPct >= 15) alpertCoeff = 50.0;
+                else if (bodyFatPct >= 12) alpertCoeff = 35.0;
+                else alpertCoeff = 30.0;
+            } else {
+                if (bodyFatPct > 30) alpertCoeff = 69.2;
+                else if (bodyFatPct >= 23) alpertCoeff = 50.0;
+                else if (bodyFatPct >= 18) alpertCoeff = 35.0;
+                else alpertCoeff = 30.0;
+            }
+        }
+        const alpertMaxDailyDeficit = hasCircumference ? Math.round(fatMassKg * alpertCoeff) : Math.round(weight * 0.22 * 69.2);
+
+        // ==========================================
+        // 2. KALKULACIJA TEMPA DEFICITA ZA GARTHE/HELMS/FORBES (BEZ BMR KOČNICE)
+        // ==========================================
+        let ratePct = 0.007;
+        if (hasCircumference) {
+            if (gender === 'male') {
+                if (bodyFatPct > 22) ratePct = 0.009;
+                else if (bodyFatPct >= 15) ratePct = 0.0065;
+                else ratePct = 0.004;
+            } else {
+                if (bodyFatPct > 30) ratePct = 0.009;
+                else if (bodyFatPct >= 23) ratePct = 0.0065;
+                else ratePct = 0.004;
+            }
+        }
+        const weeklyWeightLossKg = weight * ratePct;
+        const dailyDeficitGarthe = Math.round((weeklyWeightLossKg * 7700) / 7);
+        const targetDailyKcalGarthe = Math.round(currentTdee - dailyDeficitGarthe);
+        const currentDefPctGarthe = Math.round((dailyDeficitGarthe / currentTdee) * 100);
+
+        // Alpert target unos za trenutni PAL
+        const targetDailyKcalAlpert = Math.round(currentTdee - alpertMaxDailyDeficit);
+        const currentDefPctAlpert = Math.round((alpertMaxDailyDeficit / currentTdee) * 100);
+
+        // DINAMIČKI LEAN BULK RASPORED
+        let leanBulkMinPct, leanBulkMaxPct, leanBulkLabel;
+        if (hasCircumference) {
+            if ((gender === 'male' && bodyFatPct > 22) || (gender === 'female' && bodyFatPct > 30)) {
+                leanBulkMinPct = -0.10;
+                leanBulkMaxPct = 0.00;
+                leanBulkLabel = "-10% do 0% (Rekompozicija)";
+            } else if ((gender === 'male' && bodyFatPct >= 15) || (gender === 'female' && bodyFatPct >= 23)) {
+                leanBulkMinPct = 0.00;
+                leanBulkMaxPct = 0.03;
+                leanBulkLabel = "0% do +3%";
+            } else {
+                leanBulkMinPct = 0.03;
+                leanBulkMaxPct = 0.05;
+                leanBulkLabel = "+3% do +5% (Obavezan suficit)";
+            }
+        } else {
+            leanBulkMinPct = 0.00;
+            leanBulkMaxPct = 0.00;
+            leanBulkLabel = "0% (Održavanje)";
+        }
+
+        const currentLeanBulkMin = Math.round(currentTdee * (1 + leanBulkMinPct));
+        const currentLeanBulkMax = Math.round(currentTdee * (1 + leanBulkMaxPct));
+        const currentStdBulkMin = Math.round(currentTdee * 1.10);
+        const currentStdBulkMax = Math.round(currentTdee * 1.15);
+
+        // ==========================================
+        // SEGMENT 2: BMR OBA NACINA & TDEE
+        // ==========================================
+        const hdrBmrMetrics = document.getElementById('hdr-bmr-metrics');
+        const bmrStatusBox = document.getElementById('bmr-status-box');
+        const boxKatch = document.getElementById('box-bmr-katch');
+        const boxMifflin = document.getElementById('box-bmr-mifflin');
+        const tdeeBasisLabel = document.getElementById('tdee-basis-label');
+
+        document.getElementById('det-bmr-mifflin').innerText = `${bmrMifflin.toLocaleString()} kcal/dan`;
+
+        const bmrNameStr = hasCircumference ? "Katch-McArdle (LBM)" : "Mifflin-St Jeor";
+
+        const bmrPill = hasCircumference ? 
+            `<span class="pill-badge green">BMR (${bmrNameStr}): ${bmrKatch.toLocaleString()} kcal</span>` :
+            `<span class="pill-badge orange">BMR (${bmrNameStr}): ${bmrMifflin.toLocaleString()} kcal</span>`;
+
+        hdrBmrMetrics.innerHTML = `
+            ${bmrPill}
+            <span class="pill-badge purple">TDEE: ${currentTdee.toLocaleString()} kcal</span>
+            <span class="pill-badge orange">Mrsanje po Alpertu (-${alpertMaxDailyDeficit.toLocaleString()} kcal / -${currentDefPctAlpert}%): ~${targetDailyKcalAlpert.toLocaleString()} kcal</span>
+            <span class="pill-badge red">Mrsanje po Garthe/Helms/Forbes (-${dailyDeficitGarthe.toLocaleString()} kcal / -${currentDefPctGarthe}%): ~${targetDailyKcalGarthe.toLocaleString()} kcal</span>
+            <span class="pill-badge green">Lean Bulk (${leanBulkLabel}): ~${currentLeanBulkMin.toLocaleString()}–${currentLeanBulkMax.toLocaleString()} kcal</span>
+            <span class="pill-badge purple" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.12); color: #fca5a5;">Standard Bulk (+10% do +15%): ~${currentStdBulkMin.toLocaleString()}–${currentStdBulkMax.toLocaleString()} kcal [⚠️ NE PRAKTIKOVATI NIKADA OSIM POD SPEC. USLOVIMA]</span>
+        `;
+
+        if (hasCircumference) {
+            document.getElementById('det-bmr-katch').innerText = `${bmrKatch.toLocaleString()} kcal/dan`;
+            boxKatch.className = "info-box active-formula";
+            boxMifflin.className = "info-box";
+            tdeeBasisLabel.innerText = "Bazirana na Katch-McArdle BMR-u (Zlatni standard)";
+            tdeeBasisLabel.style.color = "var(--accent-green)";
+
+            bmrStatusBox.innerHTML = `
+                <div class="success-card">
+                    <strong>✓ Aktivna tačnija metoda:</strong> Tvoj TDEE se računa preko <strong>Katch-McArdle formule (${bmrKatch} kcal)</strong> jer tvoja nemasna masa (${lbmKg.toFixed(1)} kg LBM) precizno definiše metabolički aktivno tkivo.
+                </div>
+            `;
+        } else {
+            document.getElementById('det-bmr-katch').innerText = `Nedostaje LBM`;
+            boxKatch.className = "info-box inactive-formula";
+            boxMifflin.className = "info-box active-formula";
+            tdeeBasisLabel.innerText = "Bazirana na Mifflin-St Jeor BMR-u (Manje tačna metoda - rezervni režim)";
+            tdeeBasisLabel.style.color = "var(--accent-orange)";
+
+            bmrStatusBox.innerHTML = `
+                <div class="notice-card">
+                    <strong>⚠️ Korištena manje tačna metoda (Mifflin-St Jeor):</strong> Pošto nisu unijeti obimi, nemasna masa (LBM) nije poznata. Zbog toga se Katch-McArdle formula ne može primijeniti, a potrošnja se privremeno računa prema standardnoj Mifflin-St Jeor formuli (${bmrMifflin} kcal).
+                </div>
+            `;
+        }
+
+        const levels = [
+            { name: "Sjedalački (uredski posao, bez treninga)", factor: 1.2 },
+            { name: "Lagano aktivan (1-3 treninga / 6.000 koraka - Garmin)", factor: 1.375 },
+            { name: "Umjereno aktivan (3-4 treninga + 8-10.000 koraka)", factor: 1.5 },
+            { name: "Vrlo aktivan (5-6 treninga ili fizički aktivan posao)", factor: 1.725 },
+            { name: "Ekstremno aktivan (fizički rad + svakodnevni treninzi)", factor: 1.9 }
+        ];
+
+        // Skladištenje stanja i renderovanje tabela
+        currentCalcData = {
+            activeBmr,
+            activityMultiplier,
+            alpertCoeff,
+            alpertMaxDailyDeficit,
+            currentDefPctAlpert,
+            dailyDeficitGarthe,
+            currentDefPctGarthe,
+            leanBulkLabel,
+            leanBulkMinPct,
+            leanBulkMaxPct,
+            bmrNameStr,
+            levels
+        };
+
+        renderTdeeTables();
+    }
+
+    window.onload = function() {
+        toggleGenderFields();
+        calculateAll();
+    };
+</script>
+
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => console.log('SW registriran:', reg.scope))
+        .catch((err) => console.error('Greška pri registraciji SW-a:', err));
+    });
+  }
+</script>
+
+</body>
+</html>
